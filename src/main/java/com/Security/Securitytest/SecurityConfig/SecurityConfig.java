@@ -40,12 +40,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain getFilterChain(HttpSecurity http)throws Exception{
+
         http.csrf(customizer -> customizer.disable());
         http.authorizeHttpRequests(req -> req.anyRequest().authenticated());
         http.httpBasic(Customizer.withDefaults());
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
-
     }
 
     //@Bean
