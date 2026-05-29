@@ -1,6 +1,7 @@
 package com.Security.Securitytest.Services;
 
 import com.Security.Securitytest.Entity.User;
+import com.Security.Securitytest.Entity.UsersRecord;
 import com.Security.Securitytest.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,8 +22,14 @@ public class UserService {
         return userrepo.save(user);
     }
 
-    public List<User> getAllUsers(){
+    public List<UsersRecord> getAllUsers(){
 
-        return userrepo.findAll();
+        return userrepo.findAll()
+                .stream()
+                .map(user -> new UsersRecord(
+                        user.getId(),
+                        user.getUsername()
+                ))
+                .toList();
     }
 }
