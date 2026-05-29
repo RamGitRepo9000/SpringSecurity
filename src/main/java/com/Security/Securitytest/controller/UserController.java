@@ -2,6 +2,7 @@ package com.Security.Securitytest.controller;
 
 import com.Security.Securitytest.Entity.User;
 import com.Security.Securitytest.Entity.UsersRecord;
+import com.Security.Securitytest.Records.ApiResponse;
 import com.Security.Securitytest.Repositories.UserRepository;
 import com.Security.Securitytest.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,45 @@ public class UserController {
     private UserRepository repo;
 
     @PostMapping("/register")
-    public User saveNewUser(@RequestBody  User user){
-        return userService.saveNewUser(user);
+    public ResponseEntity<ApiResponse<UsersRecord>> saveNewUser(
+            @RequestBody User user) {
+
+        Optional<User> usr = repo.findById(user.getId());
+
+        if (usr.isPresent()) {
+            User existingUser = usr.get();
+            UsersRecord record = new UsersRecord(
+                    existingUser.getId(),
+                    existingUser.getUsername()
+            );
+            ApiResponse<UsersRecord> response =
+                    new ApiResponse<>(
+                            "User already exists",
+                            HttpStatus.CONFLICT.value(),
+                            record
+                    );
+
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(response);
+        }
+
+        User savedUser = repo.save(user);
+        UsersRecord record = new UsersRecord(
+                savedUser.getId(),
+                savedUser.getUsername()
+        );
+
+        ApiResponse<UsersRecord> response =
+                new ApiResponse<>(
+                        "User created successfully",
+                        HttpStatus.CREATED.value(),
+                        record
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
     }
 
     @GetMapping("/allUsers")
