@@ -46,7 +46,7 @@ public class UserController {
                     .body(response);
         }
 
-        User savedUser = repo.save(user);
+        User savedUser = userService.saveNewUser(user);
         UsersRecord record = new UsersRecord(
                 savedUser.getId(),
                 savedUser.getUsername()
